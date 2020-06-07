@@ -15,8 +15,10 @@
         display: grid;
         justify-content: center;
         margin: auto;
-        border: 1px solid #2c3e50;
-        box-shadow: 5px 5px 12px #999;
+        border: 2px solid #42b983;
+        box-shadow: 2px 2px 12px #42b983;
         padding: 2vw;
+        min-height: 10vw;
+        margin-bottom: 3.5vw;
     }
 </style>

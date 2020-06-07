@@ -20,8 +20,9 @@
         height: 5vw;
         background-color: #42b983;
         padding: 0 5vw;
-        margin-bottom: 10vw;
+        margin-bottom: 5vw;
         display: grid;
+        grid-template-columns: auto 1fr;
         .logo {
             align-self: center;
             .logo__text {

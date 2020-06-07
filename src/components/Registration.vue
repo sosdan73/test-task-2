@@ -17,19 +17,59 @@
                 </span>
             </div>
             <div class="login" v-if="isLoginCheck">
-                <form class="form form__login" action="#" method="post">
-                    <input placeholder="Login" v-model="user.login" class="input margin" type="text">
-                    <input placeholder="Password" v-model="user.password" class="input margin" type="password">
-                    <div v-if="user.login == '' || user.password == ''" class="disabled">Log In</div>
-                    <input v-else type="submit" value="Log In" class="btn">
+                <form
+                    class="form form__login"
+                    action="#"
+                    method="post">
+                        <input
+                            placeholder="Login"
+                            v-model="user.login"
+                            class="input margin"
+                            type="text">
+                        <input
+                            placeholder="Password"
+                            v-model="user.password"
+                            class="input margin"
+                            type="password">
+                    <div
+                        v-if="user.login == '' || user.password == ''"
+                        class="btn-primary disabled">
+                            Log In
+                    </div>
+                    <input
+                        v-else
+                        type="submit"
+                        value="Log In"
+                        class="btn btn-primary"
+                        @click="goToOrders">
                 </form>
             </div>
             <div class="signup" v-else>
-                <form class="form form__signup" action="#" method="post">
-                    <input placeholder="Login" v-model="user.login" class="input margin" type="text">
-                    <input placeholder="Password" v-model="user.password" class="input margin" type="password">
-                    <div v-if="user.login == '' || user.password == ''" class="disabled">Sign Up</div>
-                    <input v-else type="submit" value="Sign Up" class="btn">
+                <form
+                    class="form form__signup"
+                    action="#"
+                    method="post">
+                        <input
+                            placeholder="Login"
+                            v-model="user.login"
+                            class="input margin"
+                            type="text">
+                        <input
+                            placeholder="Password"
+                            v-model="user.password"
+                            class="input margin"
+                            type="password">
+                    <div
+                        v-if="user.login == '' || user.password == ''"
+                        class="btn-primary disabled">
+                            Sign Up
+                    </div>
+                    <input
+                        v-else
+                        type="submit"
+                        value="Sign Up"
+                        class="btn btn-primary"
+                        @click="goToOrders">
                 </form>
             </div>
         </card>
@@ -58,6 +98,9 @@
                     this.user.login = '';
                     this.user.password = '';
                 }
+            },
+            goToOrders() {
+                this.$router.push('/orders')
             }
         },
     }
@@ -77,37 +120,5 @@
     .bold {
         font-weight: 700;
         cursor: default;
-    }
-    .form {
-        width: 100%;
-        .input {
-            width: 100%;
-            margin: auto;
-            border: none;
-            border-bottom: 1px solid #ccc;
-            outline: none;
-            display: block;
-            font-size: 1.5vw;
-            text-align: center;
-        }
-        @mixin btn {
-            width: 100%;
-            border-radius: 0px;
-            border: 1px solid #ccc;
-            font-size: 1.5vw;
-            text-align: center;
-        }
-        .btn {
-            @include btn;
-        }
-        .disabled {
-            @include btn;
-            background-color: #bbb;
-            border: 1px solid #888;
-            cursor: default;
-        }
-        .margin {
-            margin-bottom: 2vw;
-        }
     }
 </style>
