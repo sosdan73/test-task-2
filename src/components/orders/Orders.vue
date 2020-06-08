@@ -7,7 +7,7 @@
                 v-for="order in orders"
                 :key="order.app_code"
                 class="order_element">
-                <p>{{ order.app_code }}</p>
+                <p>ID: {{ order.app_code }}</p>
                 <router-link
                     :to="'/order/' + order.app_code"
                     class="btn btn-primary">More info</router-link>

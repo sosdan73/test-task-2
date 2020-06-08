@@ -3,7 +3,13 @@
         <card width="30vw">
             <form class="form">
                 <label for="count">Number of kettles:</label>
-                <input v-model="order.app_count" class="input" id="count" type="number">
+                <input
+                    v-model="order.app_count"
+                    class="input"
+                    id="count"
+                    type="number"
+                    min="1"
+                >
                 <p>Price for one kettle: {{ price }} $</p>
                 <p>Final price: <span>{{ order.app_count * price | spacer }}</span> $</p>
                 <div
@@ -43,8 +49,7 @@
                     app_remained_count: 0,
                     app_price: 0,
                     app_paid: 0,
-                    status: 0,
-                    suborders: []
+                    status: 0
                 }
             }
         },
