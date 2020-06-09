@@ -1,49 +1,54 @@
 <template>
     <div>
-        <card width="30vw">
-            <p class="order__text">Your order's ID is <strong>{{ order.app_code }}</strong></p>
-            <p class="order__text">You ordered <strong>{{ order.app_count }}</strong> kettles</p>
-            <p class="order__text">You have <strong>{{ order.app_remained_count }}</strong> kettles left to get</p>
-            <p class="order__text">You paid <strong>{{ order.app_paid }}</strong>$ out of <strong>{{ order.app_price }}</strong>$</p>
-            <p class="order__text">{{ status }}</p>
-        </card>
-        <h2 class="header">The list of suborders:</h2>
-        <empty-list v-if="suborders.length == 0"></empty-list>
-        <card width="60vw" v-else>
-            <div
-                v-for="suborder in suborders"
-                :key="suborder.sub_code"
-                class="order_element">
-                <p>ID: {{ suborder.sub_code }}</p>
-                <p>Status: {{ suborder.status }}</p>
+        <div v-if="showPage">
+            <card width="30vw">
+                <p class="order__text">Your order's ID is <strong>{{ order.app_code }}</strong></p>
+                <p class="order__text">You ordered <strong>{{ order.app_count }}</strong> kettles</p>
+                <p class="order__text">You have <strong>{{ order.app_remained_count }}</strong> kettles left to order</p>
+                <p class="order__text">You paid <strong>{{ order.app_paid }}</strong>$ out of <strong>{{ order.app_price }}</strong>$</p>
+                <p class="order__text">{{ status }}</p>
+            </card>
+            <h2 class="header">The list of suborders:</h2>
+            <empty-list v-if="suborders.length == 0"></empty-list>
+            <card width="60vw" v-else>
+                <div
+                    v-for="suborder in suborders"
+                    :key="suborder.sub_code"
+                    class="order_element">
+                    <p>Suborder ID: {{ suborder.sub_code }}</p>
+                    <p>Status: {{ suborder.status }}</p>
+                    <router-link
+                        :to="'/suborder/' + suborder.sub_code"
+                        class="btn btn-primary">More info</router-link>
+                </div>
+            </card>
+            <div class="btn-container">
                 <router-link
-                    :to="'/suborder/' + suborder.sub_code"
-                    class="btn btn-primary">More info</router-link>
+                    to="/orders"
+                    class="btn btn-primary">
+                        Back to orders
+                </router-link>
+                <router-link
+                    v-if="order.app_remained_count > 0"
+                    :to="'/new-suborder/' + order.app_code"
+                    class="btn btn-primary">
+                        Make a new suborder
+                </router-link>
             </div>
-        </card>
-        <div class="btn-container">
-            <router-link
-                to="/orders"
-                class="btn btn-primary">
-                    Back to orders
-            </router-link>
-            <router-link
-                v-if="order.app_remained_count > 0"
-                :to="'/new-suborder/' + order.app_code"
-                class="btn btn-primary">
-                    Make a new suborder
-            </router-link>
         </div>
+        <load v-else></load>
     </div>
 </template>
 
 <script>
     import Card from '../Card'
     import emptyList from '../emptyList'
+    import load from '../Load'
     export default {
         components: {
             card: Card,
             emptyList,
+            load
         },
         data() {
             return {
@@ -52,7 +57,8 @@
                     app_code: 0,
                 },
                 suborders: [],
-                status: ''
+                status: '',
+                showPage: false
             }
         },
         methods: {
@@ -78,16 +84,16 @@
             })
             this.$http.get('https://test2-4fbba.firebaseio.com/suborders.json')
             .then(response => {
-                console.log(response);
                 return response.json()
             }).then(data => {
                 if (data) {
-                    console.log(data);
                     for (let i in data) {
-                        console.log(data[i]);
-                        this.suborders.push(data[i])
+                        if (data[i].app_code == this.id) {
+                            this.suborders.push(data[i]);
+                        }
                     }
                 }
+                this.showPage = true
             })
         },
     }

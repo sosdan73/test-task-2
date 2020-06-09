@@ -60,6 +60,7 @@
 
 <script>
     import Card from '../../Card'
+    import { eventBus } from '../../../main'
     export default {
         components: {
             card: Card
@@ -77,10 +78,11 @@
                     address: '',
                     app_code: Number(this.$route.params.id),
                     sub_count: 0,
-                    status: 0,
+                    status: 1,
                     reason: null
                 },
                 kettleModel: 'Bosch',
+                app_key: '',
                 error: false
             }
         },
@@ -88,13 +90,20 @@
             goToSuborder(e) {
                 e.preventDefault();
                 this.suborder.type = this.kettleModel == 'Bosch' ? 1 : 2;
+                this.order.app_remained_count = Number(this.order.app_remained_count) - Number(this.suborder.sub_count);
                 this.$http.post('https://test2-4fbba.firebaseio.com/suborders.json', this.suborder)
-                    .then(response => {
+                .then(response => {
+                    this.$http.post('https://test2-4fbba.firebaseio.com/orders/' + this.app_key + '.json', this.order, {
+                        headers: {
+                            'X-HTTP-Method-Override': 'PUT'
+                        },
+                        emulateHTTP: true
+                    }).then(() => {
                         let location = '/suborder/' + this.suborder.sub_code;
+                        eventBus.$emit('suborderWanted', this.suborder.sub_code);
                         this.$router.push(location)
-                    }, error => {
-                        console.log(error);
-                    });
+                    })
+                });
             },
             isError() {
                 this.error = Number(suborder.sub_count) > order.app_remained_count || Number(suborder.sub_count) <= 0 ? true : false;
@@ -114,7 +123,7 @@
                 for (let i in data) {
                     if (data[i].app_code == this.$route.params.id) {
                         this.order = data[i];
-                        console.log(this.order)
+                        this.app_key = i
                     }
                 }
             }).then(() => {
@@ -124,9 +133,7 @@
                 }).then(data => {
                     let length = 0;
                     for (let i in data) {
-                        if (data[i].app_code == this.order.app_code) {
-                            length++;
-                        }
+                        length++;
                     }
                     this.suborder.sub_code = length;
                 })

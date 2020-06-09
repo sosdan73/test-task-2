@@ -1,38 +1,44 @@
 <template>
     <div>
-        <h2 class="header">Orders list: {{ orders.length }} {{ orders.length == 1 ? 'order' : 'orders' }}</h2>
-        <empty-list v-if="orders.length == 0"></empty-list>
-        <card class="card" width="60vw" v-else>
-            <div
-                v-for="order in orders"
-                :key="order.app_code"
-                class="order_element">
-                <p>ID: {{ order.app_code }}</p>
-                <router-link
-                    :to="'/order/' + order.app_code"
-                    class="btn btn-primary">More info</router-link>
+        <div v-if="showPage">
+            <h2 class="header">Orders list: {{ orders.length }} {{ orders.length == 1 ? 'order' : 'orders' }}</h2>
+            <empty-list v-if="orders.length == 0"></empty-list>
+            <card class="card" width="60vw" v-else>
+                <div
+                    v-for="order in orders"
+                    :key="order.app_code"
+                    class="order_element">
+                    <p>ID: {{ order.app_code }}</p>
+                    <router-link
+                        :to="'/order/' + order.app_code"
+                        class="btn btn-primary">More info</router-link>
+                </div>
+            </card>
+            <div class="btn-container">
+                <router-link class="btn-primary" to="/new-order">Create an order</router-link>
             </div>
-        </card>
-        <div class="btn-container">
-            <router-link class="btn-primary" to="/new-order">Create an order</router-link>
         </div>
+        <load v-else></load>
     </div>
 </template>
 
 <script>
     import emptyList from '../emptyList'
     import Card from '../Card'
+    import load from '../Load'
     export default {
         data() {
             return {
                 orders: [
                     
-                ]
+                ],
+                showPage: false
             }
         },
         components: {
             emptyList,
-            card: Card
+            card: Card,
+            load
         },
         created() {
             this.$http.get('https://test2-4fbba.firebaseio.com/orders.json')
@@ -44,6 +50,7 @@
                         this.orders.push(data[i])
                     }
                 }
+                this.showPage = true
             })
         },
     }
