@@ -41,13 +41,18 @@
             load
         },
         created() {
+            if (!this.$store.state.user.login) {
+                this.$router.push('/')
+            }
             this.$http.get('https://test2-4fbba.firebaseio.com/orders.json')
             .then(response => {
                 return response.json()
             }).then(data => {
                 if (data) {
                     for (let i in data) {
-                        this.orders.push(data[i])
+                        if (data[i].user == this.$store.state.user.login) {
+                            this.orders.push(data[i])
+                        }
                     }
                 }
                 this.showPage = true

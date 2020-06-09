@@ -5,18 +5,33 @@
                 BuySomeKettles.com
             </h1>
         </div>
-        <div class="user">
-            {{ 'Login' }}
+        <div class="user" v-if="login">
+            {{ login }}
         </div>
         <div>
-            <router-link class="logout" to='/'>Log out →</router-link>
+            <a class="logout" @click="logOut" v-if="login">Log out →</a>
         </div>
     </div>
 </template>
 
 <script>
     export default {
-        
+        data() {
+            return {
+                
+            }
+        },
+        methods: {
+            logOut() {
+                this.$store.state.user = {};
+                this.$router.push('/')
+            }
+        },
+        computed: {
+            login() {
+                return this.$store.state.user ? this.$store.state.user.login : false
+            }
+        },
     }
 </script>
 
@@ -45,6 +60,7 @@
         }
         .logout:hover {
             border-bottom: 1px solid #2c3e50;
+            cursor: pointer;
         }
     }
 </style>

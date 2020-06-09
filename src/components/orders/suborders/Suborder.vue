@@ -128,15 +128,16 @@
                 }
             })
             .then(() => {
+                this.showPage = true;
                 if (this.suborder.status < 5) {
-                    this.$http.get('https://test2-4fbba.firebaseio.com/orders.json').then(response => {
+                    this.$http.get('https://test2-4fbba.firebaseio.com/orders.json')
+                    .then(response => {
                         return response.json()
                     }).then(data => {
                         for (let key in data) {
                             if (data[key].app_code == this.suborder.app_code) {
                                 this.order = data[key];
                                 this.app_key = key;
-                                this.showPage = true;
                             }
                         }
                     })

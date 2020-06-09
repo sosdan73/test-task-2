@@ -98,9 +98,6 @@ a {
         border: 1px solid #888;
         cursor: default;
     }
-    .margin {
-        margin-bottom: 2vw;
-    }
 }
 .input::-webkit-outer-spin-button,
 .input::-webkit-inner-spin-button {
