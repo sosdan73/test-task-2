@@ -24,8 +24,8 @@
                         class="margin error"
                         v-if="errorMessage.length > 0">{{ errorMessage }}</p>
                     <input
-                        placeholder="Login"
-                        v-model="user.login"
+                        placeholder="Email"
+                        v-model="user.email"
                         class="input margin"
                         type="text">
                     <input
@@ -34,7 +34,7 @@
                         class="input margin"
                         type="password">
                 <div
-                    v-if="user.login == '' || user.password == ''"
+                    v-if="user.email == '' || user.password == ''"
                     class="btn-primary disabled">
                         {{ isLoginCheck ? 'Log In' : 'Sign Up'}}
                 </div>
@@ -56,8 +56,9 @@
             return {
                 isLoginCheck: true,
                 user: {
-                    login: '',
-                    password: ''
+                    email: '',
+                    password: '',
+                    returnSecureToken: true
                 },
                 errorMessage: ''
             }
@@ -69,7 +70,7 @@
             tabClick(e) {
                 if (!e.target.classList.contains('bold')) {
                     this.isLoginCheck = !this.isLoginCheck;
-                    this.user.login = '';
+                    this.user.email = '';
                     this.user.password = '';
                 }
             },
@@ -81,46 +82,46 @@
             },
             goToOrders(e) {
                 e.preventDefault();
-                this.$http.get('https://test2-4fbba.firebaseio.com/users.json')
-                .then(response => {
-                    return response.json()
-                }).then(data => {
-                    if (this.isLoginCheck) {
-                        let error = 'There is no such a login';
-                        if (data) {
-                            for (let i in data) {
-                                if (data[i].login == this.user.login) {
-                                    error = 'Wrong password, try again';
-                                    if (data[i].password != this.user.password) {
-                                        this.showError(error);
-                                        return
-                                    } else {
-                                        this.$store.state.user = this.user;
-                                        console.log(this.$store.state.user, this.user);
-                                        this.$router.push('/orders')
-                                    }
-                                }
-                            }
-                        }
-                        this.showError(error);
-                        return
-                    } else {
-                        let error = 'This login already exists';
-                        if (data) {
-                            for (let i in data) {
-                                if (data[i].login == this.user.login) {
-                                    this.showError(error);
-                                    return
-                                }
-                            }
-                        }
-                        this.$http.post('https://test2-4fbba.firebaseio.com/users.json', this.user)
-                        .then(() => {
-                            this.$store.state.user = this.user;
-                            this.$router.push('/orders')
-                        })
-                    }
-                })
+                if (this.isLoginCheck) {
+                    this.$store.dispatch('login', this.user)
+                } else {
+                    this.$store.dispatch('signup', this.user)
+                }
+                // .then(response => {
+                //     if (this.isLoginCheck) {
+                //         let error = 'There is no such email';
+                //         if (response.data) {
+                //             for (let i in response.data) {
+                //                 if (response.data[i].email == this.user.email) {
+                //                     error = 'Wrong password, try again';
+                //                     if (response.data[i].password != this.user.password) {
+                //                         this.showError(error);
+                //                         return
+                //                     } else {
+                //                         this.$router.push('/orders')
+                //                     }
+                //                 }
+                //             }
+                //         }
+                //         this.showError(error);
+                //         return
+                //     } else {
+                //         let error = 'This email is already used!';
+                //         if (response.data) {
+                //             for (let i in response.data) {
+                //                 if (response.data[i].email == this.user.email) {
+                //                     this.showError(error);
+                //                     return
+                //                 }
+                //             }
+                //         }
+                //         axios.post('/signUp?key=AIzaSyDRByUnr8Hb8sSDfa6ydDDc5MD4yOeWGDM', this.user)
+                //         .then(res => {
+                //             console.log(res);
+                //             // this.$router.push('/orders')
+                //         })
+                //     }
+                // })
             }
         },
     }

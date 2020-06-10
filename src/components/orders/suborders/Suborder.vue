@@ -50,6 +50,7 @@
     import Card from '../../Card'
     import load from '../../Load'
     import { eventBus } from '../../../main'
+    import axios from 'axios'
     export default {
         components: {
             card: Card,
@@ -71,23 +72,13 @@
         },
         methods: {
             putSuborder(ready = false) {
-                this.$http.post('https://test2-4fbba.firebaseio.com/suborders/' + this.sub_key + '.json', this.suborder, {
-                    headers: {
-                        'X-HTTP-Method-Override': 'PUT'
-                    },
-                    emulateHTTP: true
-                })
+                axios.put('suborders/' + this.sub_key + '.json?auth=' + this.$store.state.idToken, this.suborder)
                 if (ready) {
                     this.order.app_paid += this.price * Number(this.suborder.sub_count);
                     if (this.order.app_paid == this.order.app_price) {
                         this.order.status = 2
                     }
-                    this.$http.post('https://test2-4fbba.firebaseio.com/orders/' + this.app_key + '.json', this.order, {
-                        headers: {
-                            'X-HTTP-Method-Override': 'PUT'
-                        },
-                        emulateHTTP: true
-                    })
+                    axios.put('orders/' + this.app_key + '.json?auth=' + this.$store.state.idToken, this.order)
                 }
             },
             statusChange(num) {
@@ -115,28 +106,24 @@
             }
         },
         created() {
-            this.$http.get('https://test2-4fbba.firebaseio.com/suborders.json')
+            axios.get('suborders.json?auth=' + this.$store.state.idToken)
             .then(response => {
-                return response.json()
-            }).then(data => {
-                for (let key in data) {
-                    if (data[key].sub_code == this.id) {
+                for (let key in response.data) {
+                    if (response.data[key].sub_code == this.id) {
                         this.sub_key = key;
-                        this.suborder = data[key];
-                        this.statusChange(data[key].status)
+                        this.suborder = response.data[key];
+                        this.statusChange(response.data[key].status)
                     }
                 }
             })
             .then(() => {
                 this.showPage = true;
                 if (this.suborder.status < 5) {
-                    this.$http.get('https://test2-4fbba.firebaseio.com/orders.json')
+                    axios.get('orders.json?auth=' + this.$store.state.idToken)
                     .then(response => {
-                        return response.json()
-                    }).then(data => {
-                        for (let key in data) {
-                            if (data[key].app_code == this.suborder.app_code) {
-                                this.order = data[key];
+                        for (let key in response.data) {
+                            if (response.data[key].app_code == this.suborder.app_code) {
+                                this.order = response.data[key];
                                 this.app_key = key;
                             }
                         }
@@ -146,14 +133,12 @@
         },
         beforeUpdate() {
             eventBus.$on('updateSuborder', e => {
-                this.$http.get('https://test2-4fbba.firebaseio.com/suborders.json')
+                axios.get('suborders.json?auth=' + this.$store.state.idToken)
                 .then(response => {
-                    return response.json()
-                }).then(data => {
-                    for (let key in data) {
-                        if (data[key].sub_code == e) {
-                            this.suborder = data[key];
-                            this.statusChange(data[key].status)
+                    for (let key in response.data) {
+                        if (response.data[key].sub_code == e) {
+                            this.suborder = response.data[key];
+                            this.statusChange(response.data[key].status)
                         }
                     }
                 })

@@ -1,18 +1,23 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import { routes } from './routes'
-import VueResource from 'vue-resource'
+// import VueResource from 'vue-resource'
 import App from './App.vue'
 import { store } from './store/store'
+import axios from 'axios'
 
 Vue.use(VueRouter);
-Vue.use(VueResource);
+// Vue.use(VueResource);
 
-const router = new VueRouter({
+export const router = new VueRouter({
   routes,
   mode: 'history'
 });
+
 export const eventBus = new Vue();
+
+axios.defaults.baseURL = 'https://test2-4fbba.firebaseio.com/';
+axios.defaults.headers.get['Accepts'] = 'application/json'
 
 const vue = new Vue({
   el: '#app',
@@ -28,24 +33,18 @@ const vue = new Vue({
 })
 
 const changeSubstatus = (value) => {
-  vue.$http.get('https://test2-4fbba.firebaseio.com/suborders.json')
+  axios.get('suborders.json?auth=' + store.state.idToken)
   .then(response => {
-    return response.json()
-  }).then(data => {
-    for (let key in data) {
-      if (data[key].sub_code == value) {
-        let object = data[key];
+    for (let key in response.data) {
+      if (response.data[key].sub_code == value) {
+        let object = response.data[key];
         object.status++;
-        vue.$http.post('https://test2-4fbba.firebaseio.com/suborders/' + key + '.json', object, {
-          headers: {
-            'X-HTTP-Method-Override': 'PUT'
-          },
-          emulateHTTP: true
+        axios.put('suborders/' + key + '.json?auth=' + store.state.idToken, object)
+        .then(() => {
+          eventBus.$emit('updateSuborder', value)
         })
       }
     }
-  }).then(response => {
-    eventBus.$emit('updateSuborder', value)
   })
 }
 eventBus.$on('suborderWanted', value => {

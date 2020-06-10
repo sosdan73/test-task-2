@@ -5,11 +5,11 @@
                 BuySomeKettles.com
             </h1>
         </div>
-        <div class="user" v-if="login">
-            {{ login }}
+        <div class="user" v-if="email">
+            {{ email }}
         </div>
         <div>
-            <a class="logout" @click="logOut" v-if="login">Log out →</a>
+            <a class="logout" @click="logOut" v-if="email">Log out →</a>
         </div>
     </div>
 </template>
@@ -23,14 +23,16 @@
         },
         methods: {
             logOut() {
-                this.$store.state.user = {};
-                this.$router.push('/')
+                this.$store.dispatch('logout');
             }
         },
         computed: {
-            login() {
-                return this.$store.state.user ? this.$store.state.user.login : false
+            email() {
+                return this.$store.state.email ? this.$store.getters.email : false
             }
+        },
+        created() {
+            this.$store.dispatch('fetchUser')
         },
     }
 </script>

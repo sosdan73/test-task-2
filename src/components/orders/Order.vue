@@ -44,6 +44,7 @@
     import Card from '../Card'
     import emptyList from '../emptyList'
     import load from '../Load'
+    import axios from 'axios'
     export default {
         components: {
             card: Card,
@@ -65,16 +66,14 @@
             
         },
         created() {
-            this.$http.get('https://test2-4fbba.firebaseio.com/orders.json')
+            axios.get('orders.json?auth=' + this.$store.state.idToken)
             .then(response => {
-                return response.json()
-            }).then(data => {
-                for (let key in data) {
-                    if (data[key].app_code == this.id) {
-                        this.order = data[key]
-                        if(data[key].status == 0) {
+                for (let key in response.data) {
+                    if (response.data[key].app_code == this.id) {
+                        this.order = response.data[key]
+                        if(response.data[key].status == 0) {
                             this.status = 'Your order is still in progress'
-                        } else if (data[key].status == 1) {
+                        } else if (response.data[key].status == 1) {
                             this.status = 'Your order has arrived. Please make sure to pay for it'
                         } else {
                             this.status = 'Everything has arrived and has been payed. Thanks!'
@@ -82,14 +81,12 @@
                     }
                 }
             })
-            this.$http.get('https://test2-4fbba.firebaseio.com/suborders.json')
+            axios.get('suborders.json?auth=' + this.$store.state.idToken)
             .then(response => {
-                return response.json()
-            }).then(data => {
-                if (data) {
-                    for (let i in data) {
-                        if (data[i].app_code == this.id) {
-                            this.suborders.push(data[i]);
+                if (response.data) {
+                    for (let i in response.data) {
+                        if (response.data[i].app_code == this.id) {
+                            this.suborders.push(response.data[i]);
                         }
                     }
                 }

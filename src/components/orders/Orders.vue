@@ -26,6 +26,7 @@
     import emptyList from '../emptyList'
     import Card from '../Card'
     import load from '../Load'
+    import axios from 'axios'
     export default {
         data() {
             return {
@@ -40,18 +41,16 @@
             card: Card,
             load
         },
+        // computed: {
+            
+        // },
         created() {
-            if (!this.$store.state.user.login) {
-                this.$router.push('/')
-            }
-            this.$http.get('https://test2-4fbba.firebaseio.com/orders.json')
+            axios.get('orders.json?auth=' + this.$store.state.idToken)
             .then(response => {
-                return response.json()
-            }).then(data => {
-                if (data) {
-                    for (let i in data) {
-                        if (data[i].user == this.$store.state.user.login) {
-                            this.orders.push(data[i])
+                if (response.data) {
+                    for (let i in response.data) {
+                        if (response.data[i].email == this.$store.getters.email) {
+                            this.orders.push(response.data[i])
                         }
                     }
                 }

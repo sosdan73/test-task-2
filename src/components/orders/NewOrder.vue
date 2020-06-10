@@ -30,6 +30,7 @@
 
 <script>
     import Card from '../Card'
+    import axios from 'axios'
     export default {
         components: {
             card: Card
@@ -44,7 +45,7 @@
                     app_price: 0,
                     app_paid: 0,
                     status: 0,
-                    user: ''
+                    email: ''
                 }
             }
         },
@@ -54,23 +55,20 @@
                 this.order.app_price = this.price * this.order.app_count;
                 this.order.app_remained_count = this.order.app_count;
                 let length = 0;
-                this.$http.get('https://test2-4fbba.firebaseio.com/orders.json')
+                axios.get('orders.json?auth=' + this.$store.state.idToken)
                 .then(response => {
-                    return response.json()
-                }).then(data => {
-                    for (let i in data) {
+                    for (let i in response.data) {
                         length++;
                     }
                     this.order.app_code = length;
-                    this.$http.post('https://test2-4fbba.firebaseio.com/orders.json', this.order)
+                    axios.post('orders.json?auth=' + this.$store.state.idToken, this.order)
                     .then(response => {
                         let location = '/order/' + this.order.app_code;
                         this.$router.push(location)
-                    }, error => {
+                    }).catch(error => {
                         console.log(error)
-                    });
+                    })
                 })
-                
             }
         },
         filters: {
@@ -80,7 +78,7 @@
             }
         },
         created() {
-            this.order.user = this.$store.state.user.login
+            this.order.email = this.$store.state.email
         },
     }
 </script>

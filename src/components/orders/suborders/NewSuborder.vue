@@ -61,6 +61,7 @@
 <script>
     import Card from '../../Card'
     import { eventBus } from '../../../main'
+    import axios from 'axios'
     export default {
         components: {
             card: Card
@@ -91,14 +92,10 @@
                 e.preventDefault();
                 this.suborder.type = this.kettleModel == 'Bosch' ? 1 : 2;
                 this.order.app_remained_count = Number(this.order.app_remained_count) - Number(this.suborder.sub_count);
-                this.$http.post('https://test2-4fbba.firebaseio.com/suborders.json', this.suborder)
-                .then(response => {
-                    this.$http.post('https://test2-4fbba.firebaseio.com/orders/' + this.app_key + '.json', this.order, {
-                        headers: {
-                            'X-HTTP-Method-Override': 'PUT'
-                        },
-                        emulateHTTP: true
-                    }).then(() => {
+                axios.post('suborders.json?auth=' + this.$store.state.idToken, this.suborder)
+                .then(() => {
+                    axios.put('orders/' + this.app_key + '.json?auth=' + this.$store.state.idToken, this.order)
+                    .then(() => {
                         let location = '/suborder/' + this.suborder.sub_code;
                         eventBus.$emit('suborderWanted', this.suborder.sub_code);
                         this.$router.push(location)
@@ -116,23 +113,19 @@
             }
         },
         created() {
-            this.$http.get('https://test2-4fbba.firebaseio.com/orders.json')
+            axios.get('orders.json?auth=' + this.$store.state.idToken)
             .then(response => {
-                return response.json()
-            }).then(data => {
-                for (let i in data) {
-                    if (data[i].app_code == this.$route.params.id) {
-                        this.order = data[i];
+                for (let i in response.data) {
+                    if (response.data[i].app_code == this.$route.params.id) {
+                        this.order = response.data[i];
                         this.app_key = i
                     }
                 }
             }).then(() => {
-                this.$http.get('https://test2-4fbba.firebaseio.com/suborders.json')
+                axios.get('suborders.json?auth=' + this.$store.state.idToken)
                 .then(response => {
-                    return response.json()
-                }).then(data => {
                     let length = 0;
-                    for (let i in data) {
+                    for (let i in response.data) {
                         length++;
                     }
                     this.suborder.sub_code = length;
